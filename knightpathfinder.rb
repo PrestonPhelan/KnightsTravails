@@ -1,4 +1,4 @@
-# require 'polytreenode'
+require_relative 'polytreenode'
 
 class KnightPathFinder
   attr_accessor :visited_positions
@@ -13,7 +13,7 @@ class KnightPathFinder
     landing_positions = []
 
     MOVES.each do |move|
-      land_pos = [ pos.first + move.first, pos[1] + move[1]]
+      land_pos = [pos.first + move.first, pos[1] + move[1]]
       next if land_pos.any? { |value| value < 0 || value > 7 }
       landing_positions << land_pos
     end
@@ -24,28 +24,31 @@ class KnightPathFinder
   def initialize(start_position)
     @start = start_position
     @visited_positions = [start_position]
-    #@move_tree = build_move_tree
+    @move_tree = build_move_tree
   end
 
-  # def build_move_tree
-  #   ##Code that builds move tree, and stores it in instance variable
-  #   moves = { start => nil }
-  #
-  #   ##Queue
-  #   positions_to_check = [start]
-  #
-  #   until positions_to_check.empty?
-  #     current_pos = positions_to_check.shift
-  #     new_moves = new_move_positions(current_pos)
-  #
-  #     new_moves.each do |end_pos|
-  #       moves[end_pos] = current_pos
-  #     end
-  #     positions_to_check += new_moves
-  #   end
-  #
-  #   moves
-  # end
+  def build_move_tree
+    ##Code that builds move tree, and stores it in instance variable
+    root = PolyTreeNode.new(start)
+    moves = [root]
+
+    ##Queue
+    positions_to_check = [root]
+
+    until positions_to_check.empty?
+      current_node = positions_to_check.shift
+      new_moves = new_move_positions(current_node.value)
+
+      new_moves.each do |end_pos|
+        new_node = PolyTreeNode.new(end_pos)
+        new_node.parent = current_node
+        moves << new_node
+        positions_to_check << new_node
+      end
+    end
+
+    moves
+  end
 
   def new_move_positions(pos)
     possible_moves = KnightPathFinder.valid_moves(pos)
@@ -71,5 +74,7 @@ if __FILE__ == $PROGRAM_NAME
 
   p kpf.new_move_positions(kpf.start)
   p kpf.visited_positions
-  # p kpf.move_tree
+  kpf.move_tree.first.children.each do |child|
+    p child.value
+  end
 end
