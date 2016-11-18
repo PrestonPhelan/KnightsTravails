@@ -61,7 +61,22 @@ class KnightPathFinder
   end
 
   def find_path(end_pos)
+    end_node = @move_tree.first.bfs(end_pos)
 
+    trace_back_path(end_node)
+  end
+
+  def trace_back_path(node)
+    path = [node.value]
+
+    current_node = node
+    while current_node.parent
+      next_node = current_node.parent
+      path.unshift(next_node.value)
+      current_node = next_node
+    end
+
+    path
   end
 
 end
@@ -69,12 +84,15 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   kpf = KnightPathFinder.new([0, 0])
+  #
+  # p KnightPathFinder.valid_moves([0, 0])
+  #
+  # p kpf.new_move_positions(kpf.start)
+  # p kpf.visited_positions
+  # kpf.move_tree.first.children.each do |child|
+  #   p child.value
+  # end
 
-  p KnightPathFinder.valid_moves([0, 0])
-
-  p kpf.new_move_positions(kpf.start)
-  p kpf.visited_positions
-  kpf.move_tree.first.children.each do |child|
-    p child.value
-  end
+  p kpf.find_path([7, 6])
+  p kpf.find_path([6, 2])
 end
